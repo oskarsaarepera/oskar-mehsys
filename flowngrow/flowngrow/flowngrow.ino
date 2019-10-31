@@ -140,7 +140,7 @@ void pumbatest(){
 }
 */
 
-//code for checking moisture. Reads 10 times, each after 1min, outputs average value
+//code for checking moisture. Reads 10 times, each after 10sec, outputs average value
 int kontroll1(){
   //cycle that goes around 10 times
   for (readIndex = 0; readIndex<numReadings; readIndex++){
@@ -149,7 +149,7 @@ int kontroll1(){
       //add the reading to the total:
       total = total + readings[readIndex];
       //delay between readings to get an average over a longer period of time
-      delay(60000); //one minute delay
+      delay(10000); //10 second delay
       }
       
   //calculate the average
@@ -175,7 +175,7 @@ int kontroll2(){
   for (readIndex = 0; readIndex<numReadings; readIndex++){
       readings[readIndex] = analogRead(pott2);
       total = total + readings[readIndex];
-      delay(60000);
+      delay(10000);
       }
       
   moist2 = total / numReadings;
@@ -197,7 +197,7 @@ int kontroll3(){
   for (readIndex = 0; readIndex<numReadings; readIndex++){
       readings[readIndex] = analogRead(pott3);
       total = total + readings[readIndex];
-      delay(60000);
+      delay(10000);
       }
       
   moist3 = total / numReadings;
