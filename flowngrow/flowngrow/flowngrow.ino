@@ -32,7 +32,7 @@ int moist3 = 0;
 RTC_DS1307 rtc;
 
 // variables for calculating clock
-int period = 5;
+int period = 3600;
 unsigned long time_now = 0;
 
 // variables for smoothing purposes
@@ -40,7 +40,6 @@ const int numReadings = 10;
 int readings[numReadings];      // the readings from the analog input
 int readIndex = 0;              // the index of the current reading
 int total = 0;                  // the running total
-int average = 0;                // the average
 
 
 
@@ -87,11 +86,11 @@ void loop() {
     if(now.unixtime() > time_now + period){
         time_now = now.unixtime(); 
         
-        //check moisture in firt pot
+        //check moisture in first pot
         moist1 = kontroll1();
         if (moist1>=drysoil){
           digitalWrite(pump1, HIGH);
-          delay(3000);
+          delay(2000);  
           digitalWrite(pump1, LOW);
         }
 
@@ -99,7 +98,7 @@ void loop() {
         moist2 = kontroll2();
         if (moist2>=drysoil){
           digitalWrite(pump2, HIGH);
-          delay(3000*1.44);
+          delay(2000*1.44);   //coeficient dependant on pot height, determined by testing
           digitalWrite(pump2, LOW);
         }
 
@@ -107,7 +106,7 @@ void loop() {
         moist3 = kontroll3();
         if (moist3>=drysoil){
           digitalWrite(pump3, HIGH);
-          delay(3000*1.66);
+          delay(2000*1.66);   //coeficient dependant on pot height, determined by testing
           digitalWrite(pump3, LOW);
         }           
     }
@@ -141,59 +140,75 @@ void pumbatest(){
 }
 */
 
-//code for checing moisture, reads 10 times, each after 10min, outputs average value
+//code for checking moisture. Reads 10 times, each after 1min, outputs average value
 int kontroll1(){
-  
-  // subtract the last reading:
-  total = total - readings[readIndex];
-  // read from the sensor:
-  readings[readIndex] = analogRead(pott1);
-  // add the reading to the total:
-  total = total + readings[readIndex];
-  // advance to the next position in the array:
-  readIndex = readIndex + 1;
-  
-  // if we're at the end of the array...
-  if (readIndex >= numReadings) {
-    // ...wrap around to the beginning:
-    readIndex = 0;
-  }
-
-  // calculate the average:
+  //cycle that goes around 10 times
+  for (readIndex = 0; readIndex<numReadings; readIndex++){
+      //add moisture values to the array "readings"
+      readings[readIndex] = analogRead(pott1);
+      //add the reading to the total:
+      total = total + readings[readIndex];
+      //delay between readings to get an average over a longer period of time
+      delay(60000); //one minute delay
+      }
+      
+  //calculate the average
   moist1 = total / numReadings;
-  // send it to the computer as ASCII digits
+  //send it to the computer for debugging
   Serial.print("esimene pott: ");
   Serial.print(moist1);
-  delay(5);        // delay in between reads for stability
+  
+  //write variables back to 0 for next checking
+  readIndex = 0;     // the index of the current reading
+  total = 0;         // the running total
+  for (int thisReading = 0; thisReading < numReadings; thisReading++) {  //the array of readings
+    readings[thisReading] = 0;
+  }
+  
+  //return the calculated value to decide if watering is needed
   return(moist1);
 }
 
+
+//same code as previous but without comments and changed variables
 int kontroll2(){
-  total = total - readings[readIndex];
-  readings[readIndex] = analogRead(pott2);
-  total = total + readings[readIndex];
-  readIndex = readIndex + 1;
-  if (readIndex >= numReadings) {
-    readIndex = 0;
-  }
+  for (readIndex = 0; readIndex<numReadings; readIndex++){
+      readings[readIndex] = analogRead(pott2);
+      total = total + readings[readIndex];
+      delay(60000);
+      }
+      
   moist2 = total / numReadings;
-  Serial.print("   teine pott: ");
+  Serial.print("esimene pott: ");
   Serial.print(moist2);
-  delay(5); 
+  
+  readIndex = 0;
+  total = 0;
+  for (int thisReading = 0; thisReading < numReadings; thisReading++) {
+    readings[thisReading] = 0;
+  }
+  
   return(moist2);
 }
 
+
+//same code as previous but without comments and changed variables
 int kontroll3(){
-  total = total - readings[readIndex];
-  readings[readIndex] = analogRead(pott3);
-  total = total + readings[readIndex];
-  readIndex = readIndex + 1;
-  if (readIndex >= numReadings) {
-    readIndex = 0;
-  }
+  for (readIndex = 0; readIndex<numReadings; readIndex++){
+      readings[readIndex] = analogRead(pott3);
+      total = total + readings[readIndex];
+      delay(60000);
+      }
+      
   moist3 = total / numReadings;
-  Serial.print("    kolmas pott: ");
-  Serial.println(moist3);
-  delay(5);        
+  Serial.print("esimene pott: ");
+  Serial.print(moist3);
+  
+  readIndex = 0;
+  total = 0;
+  for (int thisReading = 0; thisReading < numReadings; thisReading++) {
+    readings[thisReading] = 0;
+  }
+  
   return(moist3);
 }
