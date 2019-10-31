@@ -149,7 +149,7 @@ int kontroll1(){
       //add the reading to the total:
       total = total + readings[readIndex];
       //delay between readings to get an average over a longer period of time
-      delay(10000); //10 second delay
+      delay(10); //10 second delay
       }
       
   //calculate the average
@@ -175,7 +175,7 @@ int kontroll2(){
   for (readIndex = 0; readIndex<numReadings; readIndex++){
       readings[readIndex] = analogRead(pott2);
       total = total + readings[readIndex];
-      delay(10000);
+      delay(10);
       }
       
   moist2 = total / numReadings;
@@ -197,7 +197,7 @@ int kontroll3(){
   for (readIndex = 0; readIndex<numReadings; readIndex++){
       readings[readIndex] = analogRead(pott3);
       total = total + readings[readIndex];
-      delay(10000);
+      delay(10);
       }
       
   moist3 = total / numReadings;
